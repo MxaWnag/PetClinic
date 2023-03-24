@@ -24,11 +24,15 @@ def sign_up_root(request):
 @require_http_methods(["GET"])
 def create(request):
     response = {}
+    un = request.GET.get('user_name')
+    pwd = request.GET.get('password')
+    is_superuser = request.GET.get('is_superuser')
     try:
 
         User.objects.create_user(
-            username=request.GET.get('user_name'),
-            password=request.GET.get('password')
+            username=un,
+            password=pwd,
+            is_superuser=is_superuser
         )
         response['msg'] = '创建成功'
         response['error_num'] = 0
@@ -53,18 +57,18 @@ class LoginView(View):
         # 验证如果用户不为空
         if user is not None:
             # login方法登录
-            if user.is_active:
+            if request.user == user:
                 response['msg'] = username + ' ' + '用户已登录'
                 response['error_num'] = 1
             else:
                 login(request, user)
             # 返回登录成功信息
-                response['msg'] = username + ' ' + '登陆成功'
+                response['msg'] = username + ' ' + '登录成功'
                 response['error_num'] = 0
             return JsonResponse(response)
         else:
             # 返回登录失败信息
-            response['msg'] = '登陆失败'
+            response['msg'] = '登录失败'
             response['error_num'] = 1
             return JsonResponse(response)
 
@@ -72,15 +76,40 @@ class LoginView(View):
 class LogoutView(View):
 
     def get(self, request):
-        logout(request=request)
+        user1 = request.user
         response = {}
-        response['msg'] = '登出成功'
-        response['error_num'] = 0
+        if user1:
+            logout(request)
+            response['msg'] = user1.username + ' ' + '登出成功'
+            response['error_num'] = 0
+        else:
+            response['msg'] = '无用户'
+            response['error_num'] = 1
 
         return JsonResponse(response)
 
 class DeleteUserView(View):
 
-    @login_required(login_url='/login/')
     def post(self, request):
-        user1 = User.objects.get()
+
+        response = {}
+
+        #user1 = User.objects.get(id=request.POST.get('user_id'))
+        user1 = User.objects.get(username=request.POST.get('username'))
+
+        if user1.id == request.user.id:
+            response['msg'] = '您可以通过注销账号删除自己的账号！'
+            response['error_num'] = 1
+        else:
+            if user1.is_superuser == 1:
+                response['msg'] = '无删除权限！'
+                response['error_num'] = 2
+            else:
+                user1.delete()
+                response['msg'] = '删除成功'
+                response['error_num'] = 0
+
+        return JsonResponse(response)
+
+
+
