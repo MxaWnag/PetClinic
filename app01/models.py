@@ -6,7 +6,7 @@ class user(models.Model):
 
     user_name = models.CharField(max_length=20,default="")
     password = models.CharField(max_length = 20,default="")
-    permission= models.BigIntegerField(default=1)
+    permission= models.BigIntegerField(default=2)
 
 class department(models.Model):
     department_id = models.BigIntegerField(primary_key=True,default=1)
