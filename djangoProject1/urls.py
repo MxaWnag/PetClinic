@@ -22,5 +22,9 @@ urlpatterns = [
     path('create/', views.create),
     path('login/', views.LoginView.as_view()),
     path('logout/', views.LogoutView.as_view()),
-    path('deleteuser/', views.DeleteUserView.as_view())
+    path('deleteuser/', views.DeleteUserView.as_view()),
+    path('users/', views.ListUserView.as_view()),
+    path('createDisposition/', views.CreateDispositionView.as_view()),
+    path('deleteDisposition/', views.DeleteDispositionView.as_view()),
+    path('listDisposition/', views.ListDispositionView.as_view())
 ]

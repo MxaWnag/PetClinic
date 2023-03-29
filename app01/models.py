@@ -37,11 +37,10 @@ class department(models.Model):
     manager = models.CharField(max_length=20)
     introduction = models.CharField(max_length=100)
 class disposition(models.Model):
-    disposition_id = models.IntegerField(primary_key=True)
+    disposition_id = models.CharField(max_length=8, primary_key=True)
     disposition_name = models.CharField(max_length=20)
-    type = models.CharField(max_length=20)
-    introduction = models.CharField(max_length=100)
-    belong_to = models.ForeignKey(to="department",on_delete=models.CASCADE)
+    disposition_price = models.IntegerField(default=0)
+    introduction = models.TextField()
 
 class disease(models.Model):
     disease_id = models.IntegerField(primary_key=True)
