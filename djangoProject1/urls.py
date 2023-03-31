@@ -41,5 +41,6 @@ urlpatterns = [
     path('listCase/', views.ListCaseView.as_view()),
     path('showCaseDetails/', views.ShowCaseDetailsView.as_view()),
     #怎么更新不上呢
+    #怎么会这样呢
 
 ]
