@@ -26,5 +26,19 @@ urlpatterns = [
     path('users/', views.ListUserView.as_view()),
     path('createDisposition/', views.CreateDispositionView.as_view()),
     path('deleteDisposition/', views.DeleteDispositionView.as_view()),
-    path('listDisposition/', views.ListDispositionView.as_view())
+    path('listDisposition/', views.ListDispositionView.as_view()),
+    path('editDisposition/', views.EditDispositionView.as_view()),
+    path('createProject/', views.CreateProjectView.as_view()),
+    path('deleteProject/', views.DeleteProjectView.as_view()),
+    path('listProject/', views.ListProjectView.as_view()),
+    path('editProject/', views.EditProjectView.as_view()),
+    path('createDisease/', views.CreateDiseaseView.as_view()),
+    path('deleteDisease/', views.DeleteDiseaseView.as_view()),
+    path('listDisease/', views.ListDiseaseView.as_view()),
+    path('editDisease/', views.EditDiseaseView.as_view()),
+    # path('createCase/', views.create_case),
+    path('deleteCase/', views.DeleteCaseView.as_view()),
+    path('listCase/', views.ListCaseView.as_view()),
+    path('showCaseDetails/', views.ShowCaseDetailsView.as_view()),
+
 ]

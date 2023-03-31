@@ -31,11 +31,11 @@ class case(models.Model):
     treatment_pic = models.CharField(max_length=20,default="")
     treatment_video = models.CharField(max_length=20,default="")
 
-class department(models.Model):
-    department_id = models.IntegerField(primary_key=True)
-    department_name = models.CharField(max_length=20)
-    manager = models.CharField(max_length=20)
-    introduction = models.CharField(max_length=100)
+class project(models.Model):
+    project_id = models.CharField(max_length=8, primary_key=True)
+    project_name = models.CharField(max_length=20)
+    project_price = models.IntegerField(default=0)
+    introduction = models.TextField()
 class disposition(models.Model):
     disposition_id = models.CharField(max_length=8, primary_key=True)
     disposition_name = models.CharField(max_length=20)
@@ -43,10 +43,10 @@ class disposition(models.Model):
     introduction = models.TextField()
 
 class disease(models.Model):
-    disease_id = models.IntegerField(primary_key=True)
+    disease_id = models.CharField(max_length=8, primary_key=True)
     disease_name = models.CharField(max_length=20)
-    category = models.CharField(max_length=20)
-    introduction = models.CharField(max_length=20)
+    category = models.TextField()
+    introduction = models.TextField()
 class question(models.Model):
     question_id = models.IntegerField(primary_key=True)
     question_type = models.ForeignKey(to='question_type',on_delete=models.CASCADE)
