@@ -355,34 +355,34 @@ class EditDiseaseView(View):
 
 
 # 创建
-# class CaseSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = case
-#         fields = [
-#             'case_id', 'case_name', 'disease_id',
-#             'patient_specie', 'patient_age', 'patient_weight',
-#             'admission', 'admission_pic', 'admission_video',
-#         ]
-#
-#     admission_video = serializers.ListField(
-#         child=serializers.FileField(max_length=100000,
-#                                     allow_empty_file=False,
-#                                     use_url=False),
-#         required=False)
-#     admission_pic = serializers.ListField(
-#         child=serializers.ImageField(max_length=100000,
-#                                      allow_empty_file=False,
-#                                      use_url=False),
-#         required=False)
-#
-#
-# @api_view(['POST'])
-# def create_case(request):
-#     serializer = CaseSerializer(data=request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class CaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = case
+        fields = [
+            'case_id', 'case_name', 'disease_id',
+            'patient_specie', 'patient_age', 'patient_weight',
+            'admission', 'admission_pic', 'admission_video',
+        ]
+
+    admission_video = serializers.ListField(
+        child=serializers.FileField(max_length=100000,
+                                    allow_empty_file=False,
+                                    use_url=False),
+        required=False)
+    admission_pic = serializers.ListField(
+        child=serializers.ImageField(max_length=100000,
+                                     allow_empty_file=False,
+                                     use_url=False),
+        required=False)
+
+
+@api_view(['POST'])
+def create_case(request):
+    serializer = CaseSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 # 删除
@@ -394,7 +394,7 @@ class DeleteCaseView(View):
         name = request.POST.get('name')
         print(name)
         case1 = disease.objects.get(case_name=name)
-        if not case1 == None:
+        if case1 is not None:
             case1.delete()
             response['msg'] = '删除成功'
             response['error_num'] = 0
