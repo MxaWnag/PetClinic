@@ -438,6 +438,24 @@ class ShowCaseDetailsView(View):
 # 测试管理API
 # 考题相关API
 # 创建
+class CreateDiseaseView(View):
+
+    def post(self, request):
+        name = request.POST.get('name')
+        intro = request.POST.get('intro')
+        cate = request.POST.get('category')
+
+        id = str(uuid.uuid4())[:8]
+
+        disease1 = disease.objects.create(
+            disease_id=id,
+            disease_name=name,
+            category=cate,
+            introduction=intro
+        )
+        disease1.save()
+
+        return JsonResponse({'msg': '创建成功', 'error_num': 0})
 # 删除
 # 展示
 # 查看
