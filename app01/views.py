@@ -400,7 +400,7 @@ class DeleteCaseView(View):
             response['error_num'] = 0
 
         else:
-            response['msg'] = '该病例不存在'
+            response['msg'] = '该病例不存在！'
             response['error_num'] = 1
 
         return JsonResponse(response)
