@@ -61,7 +61,6 @@ class LoginView(View):
             password = request.POST.get('password')
 
         user = authenticate(request, username=username, password=password)
-        print(password)
         # 验证如果用户不为空
         if user is not None:
             # login方法登录
@@ -86,14 +85,17 @@ class LogoutView(View):
 
     def get(self, request):
         user1 = request.user
+        print(user1.username)
         response = {}
-        if user1:
+
+        if user1.is_anonymous is True:
+            response['msg'] = '无用户'
+            response['error_num'] = 1
+        else:
             logout(request)
             response['msg'] = user1.username + ' ' + '登出成功'
             response['error_num'] = 0
-        else:
-            response['msg'] = '无用户'
-            response['error_num'] = 1
+
 
         return JsonResponse(response)
 
@@ -438,7 +440,6 @@ class ShowCaseDetailsView(View):
 # 测试管理API
 # 考题相关API
 # 创建
-
 # 删除
 # 展示
 # 查看
