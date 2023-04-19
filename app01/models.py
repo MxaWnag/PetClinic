@@ -35,12 +35,12 @@ class project(models.Model):
     project_id = models.CharField(max_length=8, primary_key=True)
     project_name = models.CharField(max_length=20)
     project_price = models.IntegerField(default=0)
-    introduction = models.TextField()
+    introduction = models.TextField(default="")
 class disposition(models.Model):
     disposition_id = models.CharField(max_length=8, primary_key=True)
     disposition_name = models.CharField(max_length=20)
     disposition_price = models.IntegerField(default=0)
-    introduction = models.TextField()
+    introduction = models.TextField(default="")
 
 class disease(models.Model):
     disease_id = models.CharField(max_length=8, primary_key=True)
@@ -61,9 +61,12 @@ class question_type(models.Model):
 class test_paper(models.Model):
     paper_id = models.IntegerField(primary_key=True)
     paper_name = models.CharField(max_length=20)
-    question_id = models.ForeignKey(to=question,on_delete=models.CASCADE)
     creator_id = models.ForeignKey(to='user',on_delete=models.CASCADE)
     creation_time = models.DateTimeField()
+class question_paper(models.Model):
+    paper_id = models.ForeignKey(to=test_paper, on_delete=models.CASCADE)
+    question_id = models.ForeignKey(to=question, on_delete=models.CASCADE)
+    question_number = models.IntegerField()
 
 class result(models.Model):
     result_id = models.IntegerField(primary_key=20)

@@ -33,7 +33,7 @@ def create(request):
     response = {}
     un = request.GET.get('user_name')
     pwd = request.GET.get('password')
-    is_superuser = request.GET.get('is_superuser')
+    is_superuser = request.GET.get('is_superuser')  # is_superuser值为0表示系统管理员，值为1表示超级管理员
     try:
 
         User.objects.create_user(
@@ -115,12 +115,13 @@ class DeleteUserView(View):
             response['error_num'] = 1
         else:
             if user1.is_superuser == 1:
-                response['msg'] = '无删除权限！'
-                response['error_num'] = 2
-            else:
-                user1.delete()
                 response['msg'] = '删除成功'
                 response['error_num'] = 0
+            else:
+                user1.delete()
+                response['msg'] = '无删除权限！'
+                response['error_num'] = 2
+
 
         return JsonResponse(response)
 
@@ -142,17 +143,26 @@ class CreateDispositionView(View):
         intro = request.POST.get('intro')
         price = request.POST.get('price')
 
-        id = str(uuid.uuid4())[:8]
+        disposition1 = disposition.objects.filter(disposition_name=name).count()
 
-        dispositon1 = disposition.objects.create(
-            disposition_id=id,
-            disposition_name=name,
-            disposition_price=price,
-            introduction=intro
-        )
-        dispositon1.save()
+        if len(name) != 0:
+            if disposition1 != 0:
+                return JsonResponse({'msg': '该药品/疫苗已存在，请修改名称！', 'error_num': 1})
+            if len(name) <= 20:
+                id = str(uuid.uuid4())[:8]
+                dispositon1 = disposition.objects.create(
+                    disposition_id=id,
+                    disposition_name=name,
+                    disposition_price=price,
+                    introduction=intro
+                )
+                dispositon1.save()
 
-        return JsonResponse({'msg': '创建成功', 'error_num': 0})
+                return JsonResponse({'msg': '创建成功', 'error_num': 0})
+            else:
+                return JsonResponse({'msg': '药品/疫苗名称过长，请勿超过20个字符！', 'error_num': 3})
+        else:
+            return JsonResponse({'msg': '请完整填写药品/疫苗信息！', 'error_num': 3})
 
 
 # 删除药品/疫苗
@@ -163,14 +173,14 @@ class DeleteDispositionView(View):
         response = {}
         name = request.POST.get('name')
         print(name)
-        disposition1 = disposition.objects.get(disposition_name=name)
-        if not disposition1 == None:
+        disposition1 = disposition.objects.filter(disposition_name=name)
+        if disposition1.count() != 0:
             disposition1.delete()
             response['msg'] = '删除成功'
             response['error_num'] = 0
 
         else:
-            response['msg'] = '该药品不存在'
+            response['msg'] = '该药品/疫苗不存在'
             response['error_num'] = 1
 
         return JsonResponse(response)
@@ -198,13 +208,21 @@ class EditDispositionView(View):
         intro = request.POST.get('intro')
         price = request.POST.get('price')
 
-        disposition1 = disposition.objects.get(disposition_id=id)
-        disposition1.disposition_name = name
-        disposition1.disposition_price = price
-        disposition1.introduction = intro
-        disposition1.save()
+        cnt = disposition.objects.filter(disposition_id=id).count()
+        print(cnt)
+        if cnt != 0:
+            disposition1 = disposition.objects.get(disposition_id=id)
+            if len(name) != 0:
+                disposition1.disposition_name = name
+            if price is not None:
+                disposition1.disposition_price = price
+            disposition1.introduction = intro
+            disposition1.save()
+            return JsonResponse({'msg': '修改成功', 'error_num': 0})
+        else:
+            return JsonResponse({'msg': '该药品/疫苗不存在', 'error_num': 1})
 
-        return JsonResponse({'msg': '修改成功', 'error_num': 0})
+
 
 
 # 化验项目管理API
@@ -414,7 +432,7 @@ class ListCaseView(View):
     def get(self, request):
 
         case1 = case.objects.all().values(
-            'case_name', 'patient_specie', 'admission')
+            'case_id', 'case_name', 'patient_specie', 'admission')
         if case.objects.all().exists():
             return JsonResponse(list(case1), safe=False)
         else:
