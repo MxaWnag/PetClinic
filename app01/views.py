@@ -9,7 +9,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from app01.models import user, disposition, project, disease, case
+from app01.models import user, disposition, project, disease, case, question, question_type, option
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -365,10 +365,12 @@ class EditDiseaseView(View):
         intro = request.POST.get('intro')
         cate = request.POST.get('category')
 
+
         disease1 = disease.objects.get(disease_id=id)
         disease1.disease_name = name
         disease1.category = cate
         disease1.introduction = intro
+
         disease1.save()
 
         return JsonResponse({'msg': '修改成功', 'error_num': 0})
@@ -444,11 +446,11 @@ class ShowCaseDetailsView(View):
 
     def get(self, request):
         case_id = request.GET.get('case_id')
-        case1 = case.objects.get(case_id=case_id).values(
+        case1 = case.objects.filter(case_id=case_id).values(
             'case_name', 'disease_id',
             'patient_specie', 'patient_age', 'patient_weight',
             'admission', 'admission_pic', 'admission_video')
-        if case.objects.get(case_id=case_id).exists():
+        if case.objects.filter(case_id=case_id).exists():
             return JsonResponse(list(case1), safe=False)
         else:
             return JsonResponse({'msg': '暂无病例介绍', 'error_num': 1})
@@ -458,9 +460,87 @@ class ShowCaseDetailsView(View):
 # 测试管理API
 # 考题相关API
 # 创建
+class CreateQuestionView(View):
+
+    def post(self, request):
+        description = request.POST.get('description')
+        answer = request.POST.get('answer')
+        difficulty = request.POST.get('difficulty')
+        question_type1 = question_type.objects.get(type_id=request.POST.get('question_type_id'))
+        disease1 = disease.objects.get(disease_id=request.POST.get('disease_id'))
+        op1 = request.POST.get('op1')
+        op2 = request.POST.get('op2')
+        op3 = request.POST.get('op3')
+        op4 = request.POST.get('op4')
+
+        id = str(uuid.uuid4())[:8]
+
+        question1 = question.objects.create(
+            description=description,
+            answer=answer,
+            difficulty=difficulty,
+            question_id=id,
+            question_type=question_type1,
+            disease_id=disease1
+        )
+        question1.save()
+
+        option1 = option.objects.create(
+            question=question1,
+            option1=op1,
+            option2=op2,
+            option3=op3,
+            option4=op4
+        )
+        option1.save()
+        return JsonResponse({'msg': '创建成功', 'error_num': 0})
+
 # 删除
+class DeleteQuestionView(View):
+
+    def post(self, request):
+
+        response = {}
+        id = request.POST.get('question_id')
+        question1 = question.objects.get(question_id=id)
+        option1 = option.objects.get(question_id=id)
+        if not question1 == None:
+            question1.delete()
+            option1.delete()
+            response['msg'] = '删除成功'
+            response['error_num'] = 0
+
+        else:
+            response['msg'] = '该考题不存在'
+            response['error_num'] = 1
+
+        return JsonResponse(response)
+
 # 展示
+class ListQuestionView(View):
+
+    def get(self, request):
+
+        question1 = question.objects.all().values(
+            'question_id', 'question_type', 'description', 'disease_id__disease_name')
+        if question.objects.all().exists():
+            return JsonResponse(list(question1), safe=False)
+        else:
+            return JsonResponse({'msg': '暂无考题', 'error_num': 1})
+
 # 查看
+class ShowQuestionDetailsView(View):
+
+    def get(self, request):
+        id = request.GET.get('question_id')
+        question1 = question.objects.filter(question_id=id).values(
+            'question_id', 'question_type', 'description',
+            'option__option1', 'option__option2', 'option__option3', 'option__option4',
+            'answer', 'question_type__score')
+        if question.objects.filter(question_id=id).exists():
+            return JsonResponse(list(question1), safe=False)
+        else:
+            return JsonResponse({'msg': '暂无考题详情', 'error_num': 1})
 # 修改
 # 查看管理
 # 增加管理

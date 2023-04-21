@@ -47,11 +47,18 @@ class disease(models.Model):
     disease_name = models.CharField(max_length=20)
     category = models.TextField()
     introduction = models.TextField()
+class option(models.Model):
+    question = models.ForeignKey(to='question', on_delete=models.CASCADE)
+    option1 = models.TextField()
+    option2 = models.TextField()
+    option3 = models.TextField()
+    option4 = models.TextField()
+
 class question(models.Model):
-    question_id = models.IntegerField(primary_key=True)
+    question_id = models.CharField(max_length=8, primary_key=True)
     question_type = models.ForeignKey(to='question_type',on_delete=models.CASCADE)
+    answer = models.IntegerField(default=0)
     description = models.CharField(max_length=100)
-    answer = models.CharField(max_length=100)
     disease_id = models.ForeignKey(to='disease',on_delete=models.CASCADE)
     difficulty = models.IntegerField()
 class question_type(models.Model):
