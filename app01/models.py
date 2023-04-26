@@ -1,12 +1,12 @@
 from django.db import models
 
 # Create your models here.
-class user(models.Model):
-    user_id = models.BigIntegerField(primary_key=True,default=None)
-
-    user_name = models.CharField(max_length=20,default="")
-    password = models.CharField(max_length = 20,default="")
-    permission= models.BigIntegerField(default=2)
+# class user(models.Model):
+#     user_id = models.BigIntegerField(primary_key=True,default=None)
+#
+#     user_name = models.CharField(max_length=20,default="")
+#     password = models.CharField(max_length = 20,default="")
+#     permission= models.BigIntegerField(default=2)
 
 class department(models.Model):
     department_id = models.BigIntegerField(primary_key=True,default=1)
@@ -65,14 +65,22 @@ class question_type(models.Model):
     type_id = models.IntegerField(primary_key=True)
     type_name = models.CharField(max_length=20)
     score = models.IntegerField()
-class test_paper(models.Model):
-    paper_id = models.IntegerField(primary_key=True)
+# class test_paper(models.Model):
+#     paper_id = models.CharField(max_length=8, primary_key=True)
+#     paper_name = models.CharField(max_length=20)
+#     creatorid = models.IntegerField(default=0)
+#     creation_time = models.DateTimeField()
+
+class paper(models.Model):
+    paper_id = models.CharField(max_length=8, primary_key=True)
     paper_name = models.CharField(max_length=20)
-    creator_id = models.ForeignKey(to='user',on_delete=models.CASCADE)
+    creator_id = models.IntegerField(default=0)
+    creator = models.TextField(default='unknown')
     creation_time = models.DateTimeField()
 class question_paper(models.Model):
-    paper_id = models.ForeignKey(to=test_paper, on_delete=models.CASCADE)
-    question_id = models.ForeignKey(to=question, on_delete=models.CASCADE)
+    qp_id = models.CharField(max_length=8, primary_key=True,default=0)
+    paper_id = models.CharField(max_length=8, default=0)
+    question_id = models.CharField(max_length=8, default=0)
     question_number = models.IntegerField()
 
 class result(models.Model):
@@ -89,8 +97,8 @@ class exam_result(models.Model):
 class exam(models.Model):
     exam_id = models.IntegerField()
     exam_name = models.CharField(max_length=20)
-    paper_id = models.ForeignKey(to='test_paper',on_delete=models.CASCADE)
-    creator_id = models.ForeignKey(to='user',on_delete=models.CASCADE)
+    paper_id = models.ForeignKey(to='paper',on_delete=models.CASCADE)
+    creator = models.ForeignKey(to='auth.User',on_delete=models.CASCADE)
     creation_time = models.DateTimeField()
     starting_time = models.DateTimeField()
     duration = models.IntegerField()

@@ -18,7 +18,7 @@ from django.urls import path
 from app01 import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('root/', views.sign_up_root),
+    #path('root/', views.sign_up_root),
     path('create/', views.create),
     path('login/', views.LoginView.as_view()),
     path('logout/', views.LogoutView.as_view()),
@@ -44,6 +44,12 @@ urlpatterns = [
     path('deleteQuestion/', views.DeleteQuestionView.as_view()),
     path('listQuestion/', views.ListQuestionView.as_view()),
     path('showQuestionDetails/', views.ShowQuestionDetailsView.as_view()),
+    path('createPaper/', views.CreatePaperView.as_view()),
+    path('deletePaper/', views.DeletePaperView.as_view()),
+    path('addQuestion2Paper/', views.AddQuestion2PaperView.as_view()),
+    path('listPaper/', views.ListPaperView.as_view()),
+    path('randomQuestion/', views.RandomQuestionView.as_view()),
+
     #怎么更新不上呢
     #怎么会这样呢
 

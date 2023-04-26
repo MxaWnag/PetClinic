@@ -1,5 +1,7 @@
 import random
 import uuid
+import calendar
+import datetime
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -9,7 +11,7 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from app01.models import user, disposition, project, disease, case, question, question_type, option
+from app01.models import disposition, project, disease, case, question, question_type, option, paper, question_paper
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -21,10 +23,10 @@ import re
 # 用户管理API
 
 # 后台创建root
-def sign_up_root(request):
-    user1 = user(user_id="123456", user_name='root', permission=1)
-    user1.save()
-    return HttpResponse("<p>root添加成功！</p>")
+# def sign_up_root(request):
+#     user1 = user(user_id="123456", user_name='root', permission=1)
+#     user1.save()
+#     return HttpResponse("<p>root添加成功！</p>")
 
 
 # 创建系统管理员
@@ -347,9 +349,8 @@ class ListDiseaseView(View):
     def get(self, request):
 
         disease1 = disease.objects.all().values(
-            'disease_name', 'category', 'introduction')
+            'disease_id', 'disease_name', 'category', 'introduction')
         if disease.objects.all().exists():
-            print("**********************")
             return JsonResponse(list(disease1), safe=False)
         else:
             return JsonResponse({'msg': '暂无病种介绍', 'error_num': 1})
@@ -541,18 +542,103 @@ class ShowQuestionDetailsView(View):
             return JsonResponse(list(question1), safe=False)
         else:
             return JsonResponse({'msg': '暂无考题详情', 'error_num': 1})
-# 修改
-# 查看管理
-# 增加管理
-# 删除管理
+
+class RandomQuestionView(View):
+    def get(self, request):
+        count = question.objects.all().count()
+        num = random.randint(0, count-1)
+        q_id = question.objects.all()[num].question_id
+        question1 = question.objects.filter(question_id=q_id).values(
+            'question_id', 'question_type', 'description',
+            'option__option1', 'option__option2', 'option__option3', 'option__option4',)
+        return JsonResponse(list(question1), safe=False)
+
 
 # 试卷相关API
 # 创建
+class CreatePaperView(View):
+
+    def post(self, request):
+        name = request.POST.get('name')
+
+        id = str(uuid.uuid4())[:8]
+        if request.user.is_anonymous is True:
+            return JsonResponse({'msg': '无用户', 'error_num': 1})
+        else:
+            user1 = request.user.id
+            username1 = request.user.username
+            print(name)
+            paper1 = paper.objects.create(
+                paper_id=id,
+                paper_name=name,
+                creator_id=user1,
+                creator = username1,
+                creation_time=datetime.datetime.now()
+            )
+            paper1.save()
+
+            return JsonResponse({'msg': '创建成功', 'error_num': 0})
+
 # 删除
+class DeletePaperView(View):
+
+    def post(self, request):
+
+        response = {}
+        id = request.POST.get('paper_id')
+        user1 = request.user.id
+        paper1 = paper.objects.get(paper_id=id)
+        if user1 != paper1.creator_id:
+            response['msg'] = '无权限'
+            response['error_num'] = 2
+        elif not paper1 == None:
+            paper1.delete()
+            response['msg'] = '删除成功'
+            response['error_num'] = 0
+        else:
+            response['msg'] = '该试卷不存在'
+            response['error_num'] = 1
+
+        return JsonResponse(response)
+
 # 展示
+class ListPaperView(View):
+
+    def get(self, request):
+
+        paper1 = paper.objects.all().values(
+            'paper_id', 'paper_name', 'creator', 'creation_time')
+        if paper.objects.all().exists():
+            return JsonResponse(list(paper1), safe=False)
+        else:
+            return JsonResponse({'msg': '暂无试卷', 'error_num': 1})
+
 # 查看
+
 # 修改
 # 添加考题
+class AddQuestion2PaperView(View):
+
+    def post(self, request):
+
+        id = str(uuid.uuid4())[:8]
+        question_id1 = request.POST.get('question_id')
+        paper_id1 = request.POST.get('paper_id')
+        num = request.POST.get('number')
+        user1 = request.user.id
+
+        if user1 == paper.objects.get(paper_id=paper_id1).creator_id:
+            qp1 = question_paper.objects.create(
+                qp_id=id,
+                question_id=question_id1,
+                paper_id=paper_id1,
+                question_number=num
+            )
+            qp1.save()
+            return JsonResponse({'msg': '创建成功', 'error_num': 0})
+        else:
+            return JsonResponse({'msg': '无权限', 'error_num': 2})
+
 # 删除考题
 # 考题排序
 # 查看管理
