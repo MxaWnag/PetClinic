@@ -80,7 +80,7 @@ class paper(models.Model):
 class question_paper(models.Model):
     qp_id = models.CharField(max_length=8, primary_key=True,default=0)
     paper_id = models.CharField(max_length=8, default=0)
-    question_id = models.CharField(max_length=8, default=0)
+    question_id = models.ForeignKey(to='question', on_delete=models.CASCADE)
     question_number = models.IntegerField()
 
 class result(models.Model):

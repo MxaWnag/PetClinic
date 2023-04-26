@@ -49,6 +49,7 @@ urlpatterns = [
     path('addQuestion2Paper/', views.AddQuestion2PaperView.as_view()),
     path('listPaper/', views.ListPaperView.as_view()),
     path('randomQuestion/', views.RandomQuestionView.as_view()),
+    path('showPaperDetails/', views.ShowPaperDetailsView.as_view()),
 
     #怎么更新不上呢
     #怎么会这样呢

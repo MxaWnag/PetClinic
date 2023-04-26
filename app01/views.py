@@ -523,7 +523,7 @@ class ListQuestionView(View):
     def get(self, request):
 
         question1 = question.objects.all().values(
-            'question_id', 'question_type', 'description', 'disease_id__disease_name')
+            'question_id', 'question_type','difficulty', 'description', 'disease_id__disease_name')
         if question.objects.all().exists():
             return JsonResponse(list(question1), safe=False)
         else:
@@ -614,7 +614,17 @@ class ListPaperView(View):
             return JsonResponse({'msg': '暂无试卷', 'error_num': 1})
 
 # 查看
+class ShowPaperDetailsView(View):
+    def get(self, request):
+        id = request.GET.get('paper_id')
 
+        all_question = question_paper.objects.filter(paper_id=id).values(
+            'question_id__description','question_id__option__option1', 'question_id__option__option2',
+        'question_id__option__option3', 'question_id__option__option4').order_by('question_id__question_paper__question_number')
+        if question_paper.objects.filter(paper_id=id).exists():
+            return JsonResponse(list(all_question), safe=False)
+        else:
+            return JsonResponse({'msg': '该试卷未添加考题', 'error_num': 1})
 # 修改
 # 添加考题
 class AddQuestion2PaperView(View):
