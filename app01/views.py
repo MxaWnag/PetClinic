@@ -550,7 +550,7 @@ class RandomQuestionView(View):
         q_id = question.objects.all()[num].question_id
         question1 = question.objects.filter(question_id=q_id).values(
             'question_id', 'question_type', 'description',
-            'option__option1', 'option__option2', 'option__option3', 'option__option4',)
+            'option__option1', 'option__option2', 'option__option3', 'option__option4', 'answer')
         return JsonResponse(list(question1), safe=False)
 
 
