@@ -79,7 +79,7 @@ class paper(models.Model):
     creation_time = models.DateTimeField()
 class question_paper(models.Model):
     qp_id = models.CharField(max_length=8, primary_key=True,default=0)
-    paper_id = models.CharField(max_length=8, default=0)
+    paper_id = models.ForeignKey(to='paper', on_delete=models.CASCADE)
     question_id = models.ForeignKey(to='question', on_delete=models.CASCADE)
     question_number = models.IntegerField()
 

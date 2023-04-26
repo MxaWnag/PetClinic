@@ -626,6 +626,21 @@ class ShowPaperDetailsView(View):
         else:
             return JsonResponse({'msg': '该试卷未添加考题', 'error_num': 1})
 # 修改
+class EditPaperView(View):
+
+    def post(self, request):
+        id = request.POST.get('paper_id')
+
+        name = request.POST.get('paper_name')
+        if request.user.id != paper.objects.get(paper_id=id).creator_id:
+            return JsonResponse({'msg': '无权限', 'error_num': 2})
+        else:
+            paper1 = paper.objects.get(paper_id=id)
+            paper1.paper_name = name
+            paper1.creation_time = datetime.datetime.now()
+            paper1.save()
+
+            return JsonResponse({'msg': '修改成功', 'error_num': 0})
 # 添加考题
 class AddQuestion2PaperView(View):
 
@@ -640,8 +655,8 @@ class AddQuestion2PaperView(View):
         if user1 == paper.objects.get(paper_id=paper_id1).creator_id:
             qp1 = question_paper.objects.create(
                 qp_id=id,
-                question_id=question_id1,
-                paper_id=paper_id1,
+                question_id=question.objects.get(question_id=question_id1),
+                paper_id=paper.objects.get(paper_id=paper_id1),
                 question_number=num
             )
             qp1.save()
@@ -650,22 +665,26 @@ class AddQuestion2PaperView(View):
             return JsonResponse({'msg': '无权限', 'error_num': 2})
 
 # 删除考题
+class DeleteQuestionfromPaperView(View):
+
+    def post(self, request):
+
+        response = {}
+        id = request.POST.get('qp_id')
+        qp1 = question_paper.objects.get(qp_id=id)
+        if question_paper.objects.filter(qp_id=id).values('paper_id__creator_id') != request.user.id:
+            response['msg'] = '无权限'
+            response['error_num'] = 2
+        elif not qp1 == None:
+            qp1.delete()
+            response['msg'] = '删除成功'
+            response['error_num'] = 0
+
+        else:
+            response['msg'] = '该考题不存在'
+            response['error_num'] = 1
+
+        return JsonResponse(response)
 # 考题排序
-# 查看管理
-# 增加管理
-# 删除管理
 
-# 测试相关API
-# 创建
-# 删除
-# 展示
-# 查看
-# 修改
-# 查看管理
-# 增加管理
-# 删除管理
-# 设置考生
 
-# 成绩相关API
-# 展示
-# 评分
