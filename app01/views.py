@@ -436,6 +436,18 @@ class ListCaseView(View):
         else:
             return JsonResponse({'msg': '暂无病例介绍', 'error_num': 1})
 
+class CaseGroupView(View):
+    def post(self, request):
+        disease_id1 = request.POST.get('disease_id')
+        case1 = case.objects.filter(disease_id=disease_id1).values(
+            'case_name', 'disease__disease_name',
+            'patient_specie', 'patient_age', 'patient_weight',
+            'admission', 'checking', 'diagnostic_result', 'treatment'
+        )
+        if case.objects.filter(disease_id=disease_id1).exists():
+            return JsonResponse(list(case1), safe=False)
+        else:
+            return JsonResponse({'msg': '暂无病例介绍', 'error_num': 1})
 
 # 查看
 class ShowCaseDetailsView(View):
