@@ -620,7 +620,7 @@ class ShowPaperDetailsView(View):
 
         all_question = question_paper.objects.filter(paper_id=id).values(
             'question_id__description','question_id__option__option1', 'question_id__option__option2',
-        'question_id__option__option3', 'question_id__option__option4').order_by('question_id__question_paper__question_number')
+        'question_id__option__option3', 'question_id__option__option4', 'question_id__answer', 'paper_id__paper_name').order_by('question_id__question_paper__question_number')
         if question_paper.objects.filter(paper_id=id).exists():
             return JsonResponse(list(all_question), safe=False)
         else:
