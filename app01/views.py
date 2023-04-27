@@ -328,9 +328,8 @@ class DeleteDiseaseView(View):
     def post(self, request):
 
         response = {}
-        name = request.POST.get('name')
-        print(name)
-        disease1 = disease.objects.get(disease_name=name)
+        id = request.POST.get('id')
+        disease1 = disease.objects.get(disease_id=id)
         if not disease1 == None:
             disease1.delete()
             response['msg'] = '删除成功'
@@ -378,45 +377,41 @@ class EditDiseaseView(View):
 
 
 # 创建
-# class CaseSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = case
-#         fields = [
-#             'case_id', 'case_name', 'disease_id',
-#             'patient_specie', 'patient_age', 'patient_weight',
-#             'admission', 'admission_pic', 'admission_video',
-#         ]
-#
-#     admission_video = serializers.ListField(
-#         child=serializers.FileField(max_length=100000,
-#                                     allow_empty_file=False,
-#                                     use_url=False),
-#         required=False)
-#     admission_pic = serializers.ListField(
-#         child=serializers.ImageField(max_length=100000,
-#                                      allow_empty_file=False,
-#                                      use_url=False),
-#         required=False)
-#
-#
-# @api_view(['POST'])
-# def create_case(request):
-#     serializer = CaseSerializer(data=request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
+class CreateCaseView(View):
+    def post(self, request):
+        case_id1 = str(uuid.uuid4())[:8]
+        case_name1 = request.POST.get('case_name')
+        disease1 = request.POST.get('disease')
+        patient_specie1 = request.POST.get('specie')
+        patient_age1 = request.POST.get('age')
+        patient_weight1 = request.POST.get('weight')
+        admission1 = request.POST.get('admission')
+        checking1 = request.POST.get('checking')
+        diagnostic_result1 = request.POST.get('dia_result')
+        treatment1 = request.POST.get('treatment')
 
+        case1 = case.objects.create(
+            case_id=case_id1,
+            case_name=case_name1,
+            disease=disease.objects.get(disease_id=disease1),
+            patient_specie=patient_specie1,
+            patient_age=patient_age1,
+            patient_weight=patient_weight1,
+            admission=admission1,
+            checking=checking1,
+            diagnostic_result=diagnostic_result1,
+            treatment=treatment1
+        )
+        case1.save()
+        return JsonResponse({'msg': '创建成功', 'error_num': 0})
 # 删除
 class DeleteCaseView(View):
 
     def post(self, request):
 
         response = {}
-        name = request.POST.get('name')
-        print(name)
-        case1 = disease.objects.get(case_name=name)
+        id = request.POST.get('id')
+        case1 = case.objects.get(case_id=id)
         if case1 is not None:
             case1.delete()
             response['msg'] = '删除成功'
@@ -448,9 +443,9 @@ class ShowCaseDetailsView(View):
     def get(self, request):
         case_id = request.GET.get('case_id')
         case1 = case.objects.filter(case_id=case_id).values(
-            'case_name', 'disease_id',
+            'case_name', 'disease__disease_name',
             'patient_specie', 'patient_age', 'patient_weight',
-            'admission', 'admission_pic', 'admission_video')
+            'admission', 'checking','diagnostic_result','treatment')
         if case.objects.filter(case_id=case_id).exists():
             return JsonResponse(list(case1), safe=False)
         else:

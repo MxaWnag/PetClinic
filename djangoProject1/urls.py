@@ -36,7 +36,7 @@ urlpatterns = [
     path('deleteDisease/', views.DeleteDiseaseView.as_view()),
     path('listDisease/', views.ListDiseaseView.as_view()),
     path('editDisease/', views.EditDiseaseView.as_view()),
-    # path('createCase/', views.create_case),
+    path('createCase/', views.CreateCaseView.as_view()),
     path('deleteCase/', views.DeleteCaseView.as_view()),
     path('listCase/', views.ListCaseView.as_view()),
     path('showCaseDetails/', views.ShowCaseDetailsView.as_view()),

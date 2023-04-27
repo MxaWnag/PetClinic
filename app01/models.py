@@ -14,22 +14,16 @@ class department(models.Model):
     manager  =models.CharField(max_length=20,default="")
     introduction = models.CharField(max_length=20,default="")
 class case(models.Model):
-    case_id = models.IntegerField(primary_key=True,default=1)
+    case_id = models.CharField(max_length=8, primary_key=True)
     case_name =models.CharField(max_length=20,default="")
     disease = models.ForeignKey(to='disease',on_delete=models.CASCADE)
     patient_specie = models.CharField(max_length=20,default="")
     patient_age = models.IntegerField(default=1)
     patient_weight = models.DecimalField(max_digits=5,decimal_places=2)
     admission = models.CharField(max_length=20,default="")
-    admission_pic = models.CharField(max_length=20,default="")
-    admission_video = models.CharField(max_length=20,default="")
     checking = models.CharField(max_length=20,default="")
-    checking_pic = models.CharField(max_length=20,default="")
-    checking_video = models.CharField(max_length=20,default="")
     diagnostic_result = models.CharField(max_length=20,default="")
     treatment = models.CharField(max_length=20,default="")
-    treatment_pic = models.CharField(max_length=20,default="")
-    treatment_video = models.CharField(max_length=20,default="")
 
 class project(models.Model):
     project_id = models.CharField(max_length=8, primary_key=True)
