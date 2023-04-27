@@ -20,10 +20,10 @@ class case(models.Model):
     patient_specie = models.CharField(max_length=20,default="")
     patient_age = models.IntegerField(default=1)
     patient_weight = models.DecimalField(max_digits=5,decimal_places=2)
-    admission = models.CharField(max_length=20,default="")
-    checking = models.CharField(max_length=20,default="")
-    diagnostic_result = models.CharField(max_length=20,default="")
-    treatment = models.CharField(max_length=20,default="")
+    admission = models.TextField(default="")
+    checking = models.TextField(default="")
+    diagnostic_result = models.TextField(default="")
+    treatment = models.TextField(default="")
 
 class project(models.Model):
     project_id = models.CharField(max_length=8, primary_key=True)

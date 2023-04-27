@@ -639,15 +639,13 @@ class EditPaperView(View):
         id = request.POST.get('paper_id')
 
         name = request.POST.get('paper_name')
-        if request.user.id != paper.objects.get(paper_id=id).creator_id:
-            return JsonResponse({'msg': '无权限', 'error_num': 2})
-        else:
-            paper1 = paper.objects.get(paper_id=id)
-            paper1.paper_name = name
-            paper1.creation_time = datetime.datetime.now()
-            paper1.save()
 
-            return JsonResponse({'msg': '修改成功', 'error_num': 0})
+        paper1 = paper.objects.get(paper_id=id)
+        paper1.paper_name = name
+        paper1.creation_time = datetime.datetime.now()
+        paper1.save()
+
+        return JsonResponse({'msg': '修改成功', 'error_num': 0})
 # 添加考题
 class AddQuestion2PaperView(View):
 
@@ -657,19 +655,17 @@ class AddQuestion2PaperView(View):
         question_id1 = request.POST.get('question_id')
         paper_id1 = request.POST.get('paper_id')
         num = request.POST.get('number')
-        user1 = request.user.id
 
-        if user1 == paper.objects.get(paper_id=paper_id1).creator_id:
-            qp1 = question_paper.objects.create(
-                qp_id=id,
-                question_id=question.objects.get(question_id=question_id1),
-                paper_id=paper.objects.get(paper_id=paper_id1),
-                question_number=num
-            )
-            qp1.save()
-            return JsonResponse({'msg': '创建成功', 'error_num': 0})
-        else:
-            return JsonResponse({'msg': '无权限', 'error_num': 2})
+
+        qp1 = question_paper.objects.create(
+            qp_id=id,
+            question_id=question.objects.get(question_id=question_id1),
+            paper_id=paper.objects.get(paper_id=paper_id1),
+            question_number=num
+        )
+        qp1.save()
+        return JsonResponse({'msg': '创建成功', 'error_num': 0})
+
 
 # 删除考题
 class DeleteQuestionfromPaperView(View):
@@ -679,10 +675,7 @@ class DeleteQuestionfromPaperView(View):
         response = {}
         id = request.POST.get('qp_id')
         qp1 = question_paper.objects.get(qp_id=id)
-        if question_paper.objects.filter(qp_id=id).values('paper_id__creator_id') != request.user.id:
-            response['msg'] = '无权限'
-            response['error_num'] = 2
-        elif not qp1 == None:
+        if not qp1 == None:
             qp1.delete()
             response['msg'] = '删除成功'
             response['error_num'] = 0
