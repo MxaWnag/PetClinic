@@ -328,8 +328,8 @@ class DeleteDiseaseView(View):
     def post(self, request):
 
         response = {}
-        id = request.POST.get('id')
-        disease1 = disease.objects.get(disease_id=id)
+        name = request.POST.get('name')
+        disease1 = disease.objects.get(disease_name=name)
         if not disease1 == None:
             disease1.delete()
             response['msg'] = '删除成功'
