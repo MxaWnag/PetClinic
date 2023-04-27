@@ -573,7 +573,7 @@ class CreatePaperView(View):
             paper_id=id,
             paper_name=name,
             creator_id=0,
-            creator = 'SuperUser2',
+            creator = 'SuperUser5',
             creation_time=datetime.datetime.now()
         )
         paper1.save()
