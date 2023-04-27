@@ -569,22 +569,16 @@ class CreatePaperView(View):
         name = request.POST.get('name')
 
         id = str(uuid.uuid4())[:8]
-        if request.user.is_anonymous is True:
-            return JsonResponse({'msg': '无用户', 'error_num': 1})
-        else:
-            user1 = request.user.id
-            username1 = request.user.username
-            print(name)
-            paper1 = paper.objects.create(
-                paper_id=id,
-                paper_name=name,
-                creator_id=user1,
-                creator = username1,
-                creation_time=datetime.datetime.now()
-            )
-            paper1.save()
+        paper1 = paper.objects.create(
+            paper_id=id,
+            paper_name=name,
+            creator_id=0,
+            creator = 'SuperUser2',
+            creation_time=datetime.datetime.now()
+        )
+        paper1.save()
 
-            return JsonResponse({'msg': '创建成功', 'error_num': 0})
+        return JsonResponse({'msg': '创建成功', 'error_num': 0})
 
 # 删除
 class DeletePaperView(View):
@@ -593,12 +587,8 @@ class DeletePaperView(View):
 
         response = {}
         id = request.POST.get('paper_id')
-        user1 = request.user.id
         paper1 = paper.objects.get(paper_id=id)
-        if user1 != paper1.creator_id:
-            response['msg'] = '无权限'
-            response['error_num'] = 2
-        elif not paper1 == None:
+        if not paper1 == None:
             paper1.delete()
             response['msg'] = '删除成功'
             response['error_num'] = 0
